@@ -69,5 +69,43 @@
         </div>
     </div>
 </body>
+<script>
+    $(function(){
+        // 一进到页面，就发送ajax请求，获取所有的个人信息，显示在对应的标签中
+        $.ajax({
+            url:'http://localhost:8080/api/v1/admin/user/detail',
+            type:'get',
+            dataType:'json',
+            success: function(backData){
+                console.log(backData);
+                if (backData.code == 200) {
+                    //个人信息显示在对应的标签中
+                    $('.username').val(backData.data.username);
+                    $('.nickname').val(backData.data.nickname);
+                    $('.email').val(backData.data.email);
+                    $('.user_pic').attr('src',backData.data.userPic)
 
+                    //简写 前三句
+                    // for(var key in backData.data){
+                    //     $('.'+key).val(backData.data[key])
+                    // }
+                }
+
+            }
+        });
+
+        // 图片预览
+        // 给选中图像的input标签设置值改变change事件
+        $('#exampleInputFile').on('change',function(){
+            //获取选中的这个头像
+            var file1 = this.files[0];
+            //给这个头像文件设置一个url
+            var url = URL.createObjectURL(file1);
+            //把这个url赋值给预览用的img的src属性
+            $('.user_pic').attr('src',url);
+        })
+        
+        
+    })
+</script>
 </html>

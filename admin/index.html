@@ -30,9 +30,9 @@
             <div class="level01"><a href="#"><i class="iconfont icon-icon-article"></i><span>文章管理</span><b
                         class="iconfont icon-arrowdownl"></b></a></div>
             <ul class="level02">
-                <li><a href="#" target="main_frame"><i class="iconfont icon-previewright"></i><span>文章列表</span></a></li>
-                <li><a href="#" target="main_frame"><i class="iconfont icon-previewright"></i><span>发表文章</span></a></li>
-                <li><a href="#" target="main_frame"><i class="iconfont icon-previewright"></i><span>文章类别管理</span></a>
+                <li><a href="./article_list.html" target="main_frame"><i class="iconfont icon-previewright"></i><span>文章列表</span></a></li>
+                <li><a href="./article_release.html" target="main_frame"><i class="iconfont icon-previewright"></i><span>发表文章</span></a></li>
+                <li><a href="./article_category.html" target="main_frame"><i class="iconfont icon-previewright"></i><span>文章类别管理</span></a>
                 </li>
             </ul>
 
@@ -120,6 +120,25 @@
                 //跳转到登录页
                 window.location.href = './login.html'
             }
+        })
+
+        //三：左侧一级菜单（首页，文章列表，评论管理，个人中心）设置点击事件
+        $('div.level01').on('click',function(){
+            // 3.1 当前点击的这个一级菜单添加active类，其他的兄弟一级菜单移除
+            $(this).addClass('active').siblings('div').removeClass('active');
+            // 3.2 判断一下当前点击的是否是“文章管理”这个一级菜单
+            if ($(this).index() == 1){
+                // 二级菜单ul 显示就隐藏，隐藏就显示
+                $('ul.level02').slideToggle();
+                // 小剑尖（b标签）要做css动画（实际上就是添加/移除一个类rotate0）
+                $(this).find('b').toggleClass('rotate0');
+
+                $('ul.level02>li:eq(0)>a')[0].click()
+            }
+        });
+        // 四：左侧二级菜单（文章列表，发表文章，文章类别管理）点击事件
+        $('ul.level02>li').on('click',function(){
+            $(this).addClass('active').siblings('li').removeClass('active')
         })
 
     })

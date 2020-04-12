@@ -70,20 +70,20 @@
     </div>
 </body>
 <script>
-    $(function(){
+    $(function () {
         // 一进到页面，就发送ajax请求，获取所有的个人信息，显示在对应的标签中
         $.ajax({
-            url:'http://localhost:8080/api/v1/admin/user/detail',
-            type:'get',
-            dataType:'json',
-            success: function(backData){
+            url: 'http://localhost:8080/api/v1/admin/user/detail',
+            type: 'get',
+            dataType: 'json',
+            success: function (backData) {
                 console.log(backData);
                 if (backData.code == 200) {
                     //个人信息显示在对应的标签中
                     $('.username').val(backData.data.username);
                     $('.nickname').val(backData.data.nickname);
                     $('.email').val(backData.data.email);
-                    $('.user_pic').attr('src',backData.data.userPic)
+                    $('.user_pic').attr('src', backData.data.userPic)
 
                     //简写 前三句
                     // for(var key in backData.data){
@@ -96,16 +96,60 @@
 
         // 图片预览
         // 给选中图像的input标签设置值改变change事件
-        $('#exampleInputFile').on('change',function(){
+        $('#exampleInputFile').on('change', function () {
             //获取选中的这个头像
             var file1 = this.files[0];
             //给这个头像文件设置一个url
             var url = URL.createObjectURL(file1);
             //把这个url赋值给预览用的img的src属性
-            $('.user_pic').attr('src',url);
+            $('.user_pic').attr('src', url);
         })
-        
-        
+
+        // 个人中心编辑
+        //1 给修改按钮设置点击事件
+        $('.btn-edit').on('click', function (e) {
+            //取消form表单中的submit的默认提交按钮
+            e.preventDefault();
+            //2 获取所有的修改后的数据
+            // form获取数据
+            var form1 = document.querySelector('form');
+            var fd = new FormData(form1);
+            // 检查form表单中 需要获取数据的标签是否有name属性，以及name属性的值是否和接口的键一直
+            // 3 发送ajax请求
+            $.ajax({
+                url: 'http://localhost:8080/api/v1/admin/user/edit',
+                type: 'post',
+                dataType: 'json',
+                data: fd,
+                contentType: false,
+                processData: false,
+                success: function (backData) {
+                    console.log(backData);
+                    if (backData.code == 200) {
+                        alert(backData.msg)
+                        // 完成修改 主页更新内容
+                        // 方法一 更新父页面
+                        // parent.window.location.reload();
+                        // 发放二 发送ajax请求，获取新的个人信息，找到父页面的标签，内容直接显示对应的标签上
+                        $.ajax({
+                            type: 'get',
+                            url: 'http://localhost:8080/api/v1/admin/user/info', //使用的是http.js中的接口地址
+                            success: function (backData) {
+                                console.log(backData);
+                                if (backData.code == 200) {
+                                    //1.2 个人信息显示在页面上. 
+                                    parent.$('.user_info>span>i').text(backData.data.nickname);
+                                    parent.$('.user_info>img').attr('src', backData.data.userPic);
+                                    parent.$('.user_center_link>img').attr('src', backData.data.userPic);
+                                }
+                            }
+                        });
+                    }
+                }
+            });
+        })
+
     })
 </script>
+
 </html>

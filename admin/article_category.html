@@ -44,12 +44,101 @@
                     <tr>
                         <td colspan="3" class="text-center">
                             <a href="javascript:void(0)" class="btn btn-success" id="xinzengfenlei" data-toggle="modal"
-                                data-target="#myModal">新增分类</a>
+                                data-target="#exampleModal">新增分类</a>
                         </td>
                     </tr>
                 </tfoot>
             </table>
         </div>
     </div>
+
+    <!-- 模态框 -->
+    <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                            aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title" id="exampleModalLabel">New message</h4>
+                </div>
+                <div class="modal-body">
+                    <form>
+                        <input type="hidden" name="" id="categoryId">
+                        <div class="form-group">
+                            <label for="recipient-name" class="control-label">分类名称:</label>
+                            <input type="text" class="form-control" id="recipient-name">
+                        </div>
+                        <div class="form-group">
+                            <label for="message-text" class="control-label">分类别名:</label>
+                            <textarea class="form-control" id="message-text"></textarea>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" id="btnCancel" class="btn btn-default" data-dismiss="modal">取消</button>
+                    <button type="button" id="btnAddOrEdit" class="btn btn-primary">Send message</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 模板引擎 -->
+    <script id="category_temp" type="text/html">
+    {{each data v}}
+    <tr>
+        <td>{{v.name}}</td>
+        <td>{{v.slug}}</td>
+        <td class="text-center">
+            <a href="javascript:void(0)"  data-toggle="modal" data-target="#exampleModal"  class=" btn btn-info btn-xs">编辑</a>
+            <a href="javascript:void(0)" data-id="{{v.id}}" class="btn btn-danger btn-xs">删除</a>
+        </td>
+    </tr>
+    {{/each}}
+    </script>
+
+    <script>
+        $(function () {
+            // 一：一进到这个文章类别页面，就要显示所有的文章类别
+            // 发送ajax请求 获取到所有的文章类别
+            function getData() {
+                $.ajax({
+                    url: 'http://localhost:8080/api/v1/admin/category/list',
+                    type: 'get',
+                    dataType: 'json',
+                    success: function (backData) {
+                        console.log(backData);
+                        if (backData.code == 200) {
+                            //1.2 通过模板引擎的方式，渲染到页面上
+                            var resHtml = template('category_temp', backData)
+                            $('tbody').html(resHtml);
+                        }
+                    }
+                });
+            }
+            getData()
+
+
+            $('#exampleModal').on('show.bs.modal', function (e) {
+                //console.log(e.relatedTarget); //通过这个就能知道是谁弹出的模态框
+                if (e.relatedTarget === $('#xinzengfenlei')[0]) {
+                    //点击新增分类弹出的
+                    $('#exampleModalLabel').text('新增分类');
+                    $('#btnAddOrEdit').text('新增').addClass('btn-primary').removeClass('btn-success');
+                } else {
+                    //'点击编辑按钮弹出的
+                    $('#exampleModalLabel').text('编辑分类');
+                    $('#btnAddOrEdit').text('编辑').addClass('btn-success').removeClass('btn-primary');
+
+
+                    //编辑的第一步: 
+                    //把需要编辑的当前这一行的文章类别  名称和别名 显示在模态框中. 
+                    $('#recipient-name').val($(e.relatedTarget).parent().prev().prev().text().trim());
+                    $('#message-text').val($(e.relatedTarget).parent().prev().text().trim());
+                    $('#categoryId').val($(e.relatedTarget).attr('data-id'));
+                }
+            })
+
+        })
+    </script>
 
 </html>
